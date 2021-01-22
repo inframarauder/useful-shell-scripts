@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-##shell script to export all collections of a db as json 
+##shell script to export all collections of a db as json and copy to s3 bucket called mongo-exports
 
 dbName=$1
 
@@ -17,6 +17,8 @@ else
         fi
         col=${col:1}
         col=${col::-2}
-        mongoexport --db=$dbName --collection=$col --out="mongoexports/"$col"."json
+        mongoexport --db=$dbName --collection=$col --out="mongoexports/"$dbName"/"$col"."json
     done
+    aws s3 cp mongoexports s3://mongo-exports/ --recursive
+    rm -r mongoexports
 fi
